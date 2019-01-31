@@ -174,14 +174,14 @@ class HTTP20Adapter(HTTPAdapter):
         # so I'm not going to bother adding test coverage for it.
         class FakeOriginalResponse(object):  # pragma: no cover
             def __init__(self, headers):
-                self._headers = headers
+                self._headers = list(headers)
 
             def get_all(self, name, default=None):
                 values = []
 
                 for n, v in self._headers:
-                    if n == name.lower():
-                        values.append(v)
+                    if n.decode() == name.lower():
+                        values.append(v.decode())
 
                 if not values:
                     return default
@@ -191,7 +191,7 @@ class HTTP20Adapter(HTTPAdapter):
             def getheaders(self, name):
                 return self.get_all(name, [])
 
-        response.raw._original_response = orig = FakeOriginalResponse(None)
+        response.raw._original_response = orig = FakeOriginalResponse(resp.headers)
         orig.version = 20
         orig.status = resp.status
         orig.reason = resp.reason
