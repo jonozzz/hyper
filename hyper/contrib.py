@@ -112,7 +112,7 @@ class HTTP20Adapter(HTTPAdapter):
         conn.request(
             request.method,
             selector,
-            request.body,
+            request.body.encode() if isinstance(request.body, str) else request.body,
             request.headers
         )
         resp = conn.get_response()
